@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Clock, CheckCircle, Loader2, Truck, Package, XCircle, RotateCcw, MessageCircle } from 'lucide-react';
-import { updateOrderStatusInFirestore, getOrdersFromFirestore } from '@/lib/firestore';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft, Clock, CheckCircle, Loader2, Truck, Package, XCircle, RotateCcw, MessageCircle, Trash2, AlertCircle } from 'lucide-react';
+import { updateOrderStatusInFirestore, getOrdersFromFirestore, deleteOrderFromFirestore } from '@/lib/firestore';
 import { AdminOrder } from '@/types/admin';
 import React from 'react';
 
@@ -40,6 +41,10 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const [note, setNote] = useState('');
   const [updating, setUpdating] = useState(false);
   const [updated, setUpdated] = useState(false);
+  
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     async function loadOrder() {
@@ -83,6 +88,21 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     }
   };
 
+  const handleDelete = async () => {
+    if (!order) return;
+    try {
+      setIsDeleting(true);
+      await deleteOrderFromFirestore(order.id);
+      router.push('/btgpanel/orders');
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      alert("Failed to delete order.");
+    } finally {
+      setIsDeleting(false);
+      setShowDeletePopup(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-6 max-w-6xl">
@@ -114,7 +134,16 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           <h1 className="text-2xl font-extrabold text-gray-900">Order {order.orderId}</h1>
           <p className="text-sm text-gray-400 mt-0.5">{formatDate(order.createdAt)}</p>
         </div>
-        <span className={`ml-auto px-3 py-1 rounded-full text-xs font-bold capitalize ${statusColor[order.status]}`}>{order.status}</span>
+        <div className="ml-auto flex items-center gap-3">
+          <span className={`px-3 py-1 rounded-full text-xs font-bold capitalize ${statusColor[order.status] || statusColor.pending}`}>{order.status}</span>
+          <button 
+            onClick={() => setShowDeletePopup(true)}
+            className="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-colors shadow-sm"
+            title="Delete Order"
+          >
+            <Trash2 size={18} />
+          </button>
+        </div>
       </div>
 
       {updated && (
@@ -231,6 +260,37 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Popup */}
+      {showDeletePopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 text-center">
+            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Order?</h3>
+            <p className="text-gray-500 text-sm mb-6">
+              Are you sure you want to delete order <strong>{order.orderId}</strong>? This action cannot be undone and will permanently remove data from the database.
+            </p>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowDeletePopup(false)} 
+                disabled={isDeleting}
+                className="flex-1 py-2.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-lg transition-colors text-sm"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleDelete} 
+                disabled={isDeleting}
+                className="flex-1 py-2.5 px-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors shadow-sm text-sm flex items-center justify-center gap-2"
+              >
+                {isDeleting ? <Loader2 size={16} className="animate-spin" /> : 'Yes, Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -254,6 +254,16 @@ export const getOrderByOrderId = async (orderId: string): Promise<AdminOrder | n
   }
 };
 
+export const deleteOrderFromFirestore = async (id: string): Promise<void> => {
+  try {
+    const docRef = doc(db, COLLECTIONS.ORDERS, id);
+    await deleteDoc(docRef);
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    throw error;
+  }
+};
+
 // ==================== CUSTOMERS ====================
 
 export const saveCustomerFromOrder = async (
