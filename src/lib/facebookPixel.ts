@@ -20,11 +20,7 @@ export const init = () => {
   }
 };
 
-export const pageView = () => {
-  if (typeof window !== 'undefined' && (window as any).fbq) {
-    (window as any).fbq('track', 'PageView');
-  }
-};
+export const pageView = () => trackEvent('PageView');
 
 interface EventParams {
   content_name?: string;
@@ -37,13 +33,43 @@ interface EventParams {
   search_string?: string;
 }
 
+const generateEventId = () => {
+  return `evt_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+};
+
+const sendServerEvent = async (eventName: string, eventId: string, params?: EventParams) => {
+  try {
+    await fetch('/api/fb-event', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventName,
+        eventId,
+        eventUrl: window.location.href,
+        params,
+        userAgent: navigator.userAgent
+      }),
+    });
+  } catch (error) {
+    console.error('Failed to send server event:', error);
+  }
+};
+
 const trackEvent = (eventName: string, params?: EventParams) => {
-  if (typeof window !== 'undefined' && (window as any).fbq) {
-    if (params) {
-      (window as any).fbq('track', eventName, params);
-    } else {
-      (window as any).fbq('track', eventName);
+  if (typeof window !== 'undefined') {
+    const eventId = generateEventId();
+    
+    // 1. Fire Client Side (Browser Pixel)
+    if ((window as any).fbq) {
+      if (params) {
+        (window as any).fbq('track', eventName, params, { eventID: eventId });
+      } else {
+        (window as any).fbq('track', eventName, {}, { eventID: eventId });
+      }
     }
+
+    // 2. Fire Server Side (Conversions API)
+    sendServerEvent(eventName, eventId, params);
   }
 };
 
