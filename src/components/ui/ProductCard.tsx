@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
+import * as fbPixel from '@/lib/facebookPixel';
 
 interface ProductCardProps {
   product: Product;
@@ -20,6 +21,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     addItem(product, 1);
+    fbPixel.addToCart({
+      content_name: product.title,
+      content_ids: [product.id],
+      content_type: 'product',
+      value: product.salePrice || product.price,
+      currency: 'BDT',
+      num_items: 1
+    });
   };
 
   return (
