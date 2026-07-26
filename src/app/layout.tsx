@@ -24,6 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
+    metadataBase: new URL('https://bluetalk.site'),
     title,
     description,
     keywords: 'ecommerce, bluatalk goods, online shopping, bangladesh, buy online',
@@ -32,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       siteName,
       type: 'website',
-      url: 'https://bluatalkgoods.com',
+      url: 'https://bluetalk.site',
       images: [
         {
           url: '/logo.png',
@@ -56,6 +57,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+import { Suspense } from 'react';
 import { FacebookPixel } from '@/components/FacebookPixel';
 
 export default function RootLayout({
@@ -69,7 +71,9 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body className="font-sans antialiased min-h-screen flex flex-col bg-[#F4F7FB] text-gray-900">
-        <FacebookPixel />
+        <Suspense fallback={null}>
+          <FacebookPixel />
+        </Suspense>
         <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
       </body>
     </html>

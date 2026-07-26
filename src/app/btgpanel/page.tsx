@@ -236,7 +236,7 @@ export default function AdminDashboard() {
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} axisLine={false} tickLine={false} tickFormatter={v => `৳${(v/1000).toFixed(0)}k`} />
-              <Tooltip formatter={(v: number) => [`৳${v.toLocaleString()}`, 'Revenue']} contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
+              <Tooltip formatter={(v: any) => [`৳${Number(v).toLocaleString()}`, 'Revenue']} contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
               <Area type="monotone" dataKey="revenue" stroke="#1A35FF" strokeWidth={2.5} fill="url(#revGrad)" />
             </AreaChart>
           </ResponsiveContainer>
@@ -250,7 +250,7 @@ export default function AdminDashboard() {
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <Tooltip formatter={(v: number) => [v, 'Orders']} contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
+              <Tooltip formatter={(v: any) => [v, 'Orders']} contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
               <Bar dataKey="orders" fill="#1A35FF" radius={[6, 6, 0, 0]} opacity={0.85} />
             </BarChart>
           </ResponsiveContainer>

@@ -17,6 +17,9 @@ export interface Product {
   isActive?: boolean;
   basePrice?: number;
   isFreeDelivery?: boolean;
+  stock?: number;
+  seoTitle?: string;
+  seoDescription?: string;
   createdAt?: number;
 }
 

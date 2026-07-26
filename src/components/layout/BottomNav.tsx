@@ -38,7 +38,7 @@ export const BottomNav = () => {
                   strokeWidth={isActive ? 2.5 : 2}
                   className={isActive ? "text-primary-500" : "text-gray-400"}
                 />
-                {item.badge > 0 && (
+                {item.badge !== undefined && item.badge > 0 && (
                   <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full shadow-sm ring-2 ring-white">
                     {item.badge}
                   </span>
