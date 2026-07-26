@@ -13,7 +13,11 @@ export default function CartPage() {
     if (items.length > 0) {
       fbPixel.initiateCheckout({
         content_ids: items.map(i => i.product.id),
-        contents: items.map(i => ({ id: i.product.id, quantity: i.quantity })),
+        contents: items.map(i => ({ 
+          id: i.product.id, 
+          quantity: i.quantity,
+          item_price: i.product.salePrice || i.product.price
+        })),
         value: getTotal(),
         currency: 'BDT',
         num_items: items.reduce((sum, i) => sum + i.quantity, 0),
