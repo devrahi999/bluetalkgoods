@@ -1,12 +1,26 @@
+"use client";
+
 import { CartItems } from '@/components/cart/CartItems';
 import { CartSummary } from '@/components/cart/CartSummary';
 import Link from 'next/link';
-
-export const metadata = {
-  title: "Your Cart | BluaTalk Goods",
-};
+import { useCartStore } from '@/store/cartStore';
+import * as fbPixel from '@/lib/facebookPixel';
 
 export default function CartPage() {
+  const { items, getTotal } = useCartStore();
+
+  const handleProceedToCheckout = () => {
+    if (items.length > 0) {
+      fbPixel.initiateCheckout({
+        content_ids: items.map(i => i.product.id),
+        contents: items.map(i => ({ id: i.product.id, quantity: i.quantity })),
+        value: getTotal(),
+        currency: 'BDT',
+        num_items: items.reduce((sum, i) => sum + i.quantity, 0),
+      });
+    }
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen py-8 md:py-12">
       <div className="container-custom">
@@ -18,8 +32,9 @@ export default function CartPage() {
           <div className="w-full lg:w-1/3">
             <div className="bg-white p-6 rounded-md shadow-sm border border-gray-200 sticky top-24">
               <CartSummary />
-              <Link 
+              <Link
                 href="/checkout"
+                onClick={handleProceedToCheckout}
                 className="mt-6 w-full btn-primary block text-center"
               >
                 Proceed to Checkout

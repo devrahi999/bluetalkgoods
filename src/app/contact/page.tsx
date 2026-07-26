@@ -83,6 +83,7 @@ export default function ContactPage() {
             href={`https://wa.me/${(settings?.whatsappNumber || '8801700000000').replace(/[^0-9]/g, '')}?text=${encodeURIComponent("Hello! I need help with my order.")}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => fbPixel.contact()}
             className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-semibold py-3 rounded-md transition-colors shadow-sm text-sm"
           >
             <MessageCircle size={18} />

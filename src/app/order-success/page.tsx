@@ -42,22 +42,6 @@ export default function OrderSuccessPage() {
       try { 
         const parsedOrder: OrderData = JSON.parse(stored);
         setOrder(parsedOrder); 
-        
-        // Facebook Pixel: Purchase event
-        const trackedKey = `fb_purchase_${parsedOrder.orderId}`;
-        if (!sessionStorage.getItem(trackedKey)) {
-          fbPixel.purchase({
-            value: parsedOrder.total,
-            currency: 'BDT',
-            content_ids: parsedOrder.items.map(i => i.product.id),
-            num_items: parsedOrder.items.reduce((sum, item) => sum + item.quantity, 0),
-            contents: parsedOrder.items.map(i => ({
-              id: i.product.id,
-              quantity: i.quantity
-            }))
-          });
-          sessionStorage.setItem(trackedKey, 'true');
-        }
       } catch { /* ignore */ }
     }
   }, []);

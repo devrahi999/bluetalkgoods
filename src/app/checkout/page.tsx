@@ -32,6 +32,7 @@ export default function CheckoutPage() {
     if (items.length > 0) {
       fbPixel.initiateCheckout({
         content_ids: items.map(i => i.product.id),
+        contents: items.map(i => ({ id: i.product.id, quantity: i.quantity })),
         value: getTotal(),
         currency: 'BDT',
         num_items: items.reduce((sum, item) => sum + item.quantity, 0)
@@ -103,6 +104,19 @@ export default function CheckoutPage() {
 
       // Real Firestore Creation!
       await createOrderInFirestore(orderPayload);
+
+      // Facebook Pixel: Purchase
+      fbPixel.purchase({
+        content_ids: items.map(item => item.product.id),
+        contents: items.map(item => ({
+          id: item.product.id,
+          quantity: item.quantity,
+          item_price: item.product.salePrice || item.product.price,
+        })),
+        value: total,
+        currency: 'BDT',
+        num_items: items.reduce((sum, item) => sum + item.quantity, 0)
+      });
 
       // Save order data to localStorage for the success page
       localStorage.setItem('lastOrder', JSON.stringify({
