@@ -157,3 +157,8 @@ export interface AdminLog {
   details: string;
   timestamp: number;
 }
+
+export interface AdminBanner {
+  url: string;
+  link?: string;
+}

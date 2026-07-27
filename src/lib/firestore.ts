@@ -14,7 +14,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { Product } from '../types';
-import { AdminOrder, AdminCustomer, AdminReview, AdminMessage, StoreSettings, AdminUser } from '../types/admin';
+import { AdminOrder, AdminCustomer, AdminReview, AdminMessage, StoreSettings, AdminUser, AdminBanner } from '../types/admin';
 import { mockProducts } from './mockData';
 
 // Collection Names
@@ -423,12 +423,17 @@ export const updateStoreSettingsInFirestore = async (settings: StoreSettings): P
   await setDoc(docRef, settings, { merge: true });
 };
 
-export const getBannersFromFirestore = async (): Promise<string[]> => {
+export const getBannersFromFirestore = async (): Promise<AdminBanner[]> => {
   try {
     const docRef = doc(db, COLLECTIONS.BANNERS, 'homepage');
     const docSnap = await getDoc(docRef);
-    if (docSnap.exists() && docSnap.data().urls) {
-      return docSnap.data().urls as string[];
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      if (data.banners) {
+        return data.banners as AdminBanner[];
+      } else if (data.urls) {
+        return (data.urls as string[]).map(url => ({ url }));
+      }
     }
     return [];
   } catch (error) {
@@ -437,7 +442,7 @@ export const getBannersFromFirestore = async (): Promise<string[]> => {
   }
 };
 
-export const updateBannersInFirestore = async (urls: string[]): Promise<void> => {
+export const updateBannersInFirestore = async (banners: AdminBanner[]): Promise<void> => {
   const docRef = doc(db, COLLECTIONS.BANNERS, 'homepage');
-  await setDoc(docRef, { urls }, { merge: true });
+  await setDoc(docRef, { banners }, { merge: true });
 };

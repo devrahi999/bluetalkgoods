@@ -3,16 +3,18 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { getBannersFromFirestore } from "@/lib/firestore";
+import { AdminBanner } from "@/types/admin";
 
-const defaultBanners = [
-  "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=2070",
-  "https://images.unsplash.com/photo-1607082349566-187342175e2f?q=80&w=2070",
-  "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070"
+const defaultBanners: AdminBanner[] = [
+  { url: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=2070" },
+  { url: "https://images.unsplash.com/photo-1607082349566-187342175e2f?q=80&w=2070" },
+  { url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070" }
 ];
 
 export function HeroSection() {
-  const [banners, setBanners] = useState<string[]>(defaultBanners);
+  const [banners, setBanners] = useState<AdminBanner[]>(defaultBanners);
   const [currentIdx, setCurrentIdx] = useState(0);
 
   useEffect(() => {
@@ -48,13 +50,25 @@ export function HeroSection() {
           transition={{ duration: 1 }}
           className="absolute inset-0"
         >
-          <Image
-            src={banners[currentIdx] || defaultBanners[0]}
-            alt={`Banner ${currentIdx + 1}`}
-            fill
-            priority
-            className="object-cover"
-          />
+          {banners[currentIdx]?.link ? (
+            <Link href={banners[currentIdx].link!} className="absolute inset-0 block">
+              <Image
+                src={banners[currentIdx]?.url || defaultBanners[0].url}
+                alt={`Banner ${currentIdx + 1}`}
+                fill
+                priority
+                className="object-cover"
+              />
+            </Link>
+          ) : (
+            <Image
+              src={banners[currentIdx]?.url || defaultBanners[0].url}
+              alt={`Banner ${currentIdx + 1}`}
+              fill
+              priority
+              className="object-cover"
+            />
+          )}
         </motion.div>
       </AnimatePresence>
       
