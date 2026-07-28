@@ -20,6 +20,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     addItem(product, 1);
     fbPixel.addToCart({
       content_name: product.title,
